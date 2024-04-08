@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 )
 
@@ -18,7 +17,6 @@ func NewParcelStore(driverName string, dataSourceName string) ParcelStore {
 	if driverName == "sqlite" {
 		db, err := sql.Open(driverName, dataSourceName)
 		if err != nil {
-			fmt.Println("not connect")
 			log.Println(err)
 		}
 		pStore.db = db
