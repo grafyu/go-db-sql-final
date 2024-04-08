@@ -39,16 +39,15 @@ func TestAddGetDelete(t *testing.T) {
 
 	addedParcel, err := store.Get(number)
 	require.NoError(t, err)
-	assert.Equal(t, addedParcel.Client, parcel.Client)
-	assert.Equal(t, addedParcel.Status, parcel.Status)
-	assert.Equal(t, addedParcel.Address, parcel.Address)
-	assert.Equal(t, addedParcel.CreatedAt, parcel.CreatedAt)
+
+	parcel.Number = number
+	assert.Equal(t, addedParcel, parcel)
 
 	err = store.Delete(number)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = store.Get(number)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 // TestSetAddress проверяет обновление адреса
@@ -66,7 +65,8 @@ func TestSetAddress(t *testing.T) {
 	err = store.SetAddress(id, newAddress)
 	require.NoError(t, err)
 
-	addedParcel, _ := store.Get(id)
+	addedParcel, err := store.Get(id)
+	require.NoError(t, err)
 	assert.Equal(t, addedParcel.Address, newAddress)
 
 }
@@ -79,15 +79,14 @@ func TestSetStatus(t *testing.T) {
 	parcel := getTestParcel()
 
 	number, err := store.Add(parcel)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, number)
 
-	err = store.SetStatus(number, ParcelStatusSent)
-	assert.NoError(t, err)
-
 	err = store.SetStatus(number, ParcelStatusDelivered)
-	assert.NoError(t, err)
-	addedParcel, _ := store.Get(number)
+	require.NoError(t, err)
+
+	addedParcel, err := store.Get(number)
+	require.NoError(t, err)
 	assert.Equal(t, addedParcel.Status, ParcelStatusDelivered)
 }
 
@@ -110,7 +109,7 @@ func TestGetByClient(t *testing.T) {
 
 	for i := 0; i < len(parcels); i++ {
 		number, err := store.Add(parcels[i])
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotEmpty(t, number)
 
 		parcels[i].Number = number
@@ -119,15 +118,11 @@ func TestGetByClient(t *testing.T) {
 
 	storedParcels, err := store.GetByClient(client)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, len(storedParcels), len(parcels))
 
+	require.Equal(t, len(parcels), len(storedParcels))
 	for _, parcel := range storedParcels {
-
-		assert.Equal(t, parcel.Number, parcelMap[parcel.Number].Number)
-		assert.Equal(t, parcel.Client, parcelMap[parcel.Number].Client)
-		assert.Equal(t, parcel.Status, parcelMap[parcel.Number].Status)
-		assert.Equal(t, parcel.Address, parcelMap[parcel.Number].Address)
-		assert.Equal(t, parcel.CreatedAt, parcelMap[parcel.Number].CreatedAt)
+		assert.Equal(t, parcel, parcelMap[parcel.Number])
 	}
 }
