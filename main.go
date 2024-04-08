@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -38,12 +37,12 @@ func (s ParcelService) Register(client int, address string) (Parcel, error) {
 		CreatedAt: time.Now().UTC().Format(time.RFC3339),
 	}
 
-	id, err := s.store.Add(parcel)
+	number, err := s.store.Add(parcel)
 	if err != nil {
 		return parcel, err
 	}
 
-	parcel.Number = id
+	parcel.Number = number
 
 	fmt.Printf("Новая посылка № %d на адрес %s от клиента с идентификатором %d зарегистрирована %s\n",
 		parcel.Number, parcel.Address, parcel.Client, parcel.CreatedAt)
@@ -98,8 +97,8 @@ func (s ParcelService) Delete(number int) error {
 
 func main() {
 	// настройте подключение к БД
-
-	store := // создайте объект ParcelStore функцией NewParcelStore
+	store := NewParcelStore("sqlite", "tracker.db") // создайте объект ParcelStore функцией NewParcelStore
+	defer store.db.Close()
 	service := NewParcelService(store)
 
 	// регистрация посылки
