@@ -123,9 +123,9 @@ func TestGetByClient(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, len(parcels), len(storedParcels))
 
-	// в parcelMap лежат добавленные посылки, ключ - идентификатор посылки, значение - сама посылка
+	// в parcelMap лежат добавленные посылки, где key - идентификатор посылки, value - сама посылка
 	// убедитесь, что все посылки из storedParcels есть в parcelMap
 	for _, parcel := range storedParcels {
-		assert.Equal(t, parcelMap[parcel.Number], parcelMap[parcel.Number])
+		assert.Contains(t, parcelMap, parcel.Number)
 	}
 }
