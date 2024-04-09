@@ -17,9 +17,11 @@ func NewParcelStore(driverName string, dataSourceName string) ParcelStore {
 	if driverName == "sqlite" {
 		db, err := sql.Open(driverName, dataSourceName)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 		pStore.db = db
+	} else {
+		log.Fatalf("the %s does not match any of the DB", driverName)
 	}
 
 	return pStore
@@ -67,7 +69,7 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 
 	var res []Parcel
 
-	for i := 0; rows.Next(); i++ {
+	for rows.Next() {
 		var temp Parcel
 		err = rows.Scan(&temp.Number, &temp.Client, &temp.Status, &temp.Address, &temp.CreatedAt)
 		if err != nil {
